@@ -1,0 +1,31 @@
+add influxdb connection entities:
+  title: 'Create new Influxdb Connection entities'
+
+administer influxdb connection entities:
+  title: 'Administer Influxdb Connection entities'
+  description: 'Allow to access the administration form to configure Influxdb Connection entities.'
+  restrict access: true
+
+delete influxdb connection entities:
+  title: 'Delete Influxdb Connection entities'
+
+edit influxdb connection entities:
+  title: 'Edit Influxdb Connection entities'
+
+view published influxdb connection entities:
+  title: 'View published Influxdb Connection entities'
+
+view unpublished influxdb connection entities:
+  title: 'View unpublished Influxdb Connection entities'
+
+view all influxdb connection revisions:
+  title: 'View all Influxdb Connection revisions'
+
+revert all influxdb connection revisions:
+  title: 'Revert all Influxdb Connection revisions'
+  description: 'Role requires permission <em>view Influxdb Connection revisions</em> and <em>edit rights</em> for influxdb connection entities in question or <em>administer influxdb connection entities</em>.'
+
+delete all influxdb connection revisions:
+  title: 'Delete all revisions'
+  description: 'Role requires permission to <em>view Influxdb Connection revisions</em> and <em>delete rights</em> for influxdb connection entities in question or <em>administer influxdb connection entities</em>.'
+

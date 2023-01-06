@@ -1,0 +1,5 @@
+entity.influxdb_connection.add_form:
+  route_name: entity.influxdb_connection.add_form
+  title: 'Add Influxdb Connection'
+  appears_on:
+    - entity.influxdb_connection.collection

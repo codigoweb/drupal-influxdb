@@ -1,0 +1,19 @@
+{
+    "name": "drupal/influxdb",
+    "type": "drupal-module",
+    "description": "Drupal module to manage connections with InfluxDB servers.",
+    "keywords": [
+    ],
+    "minimum-stability": "dev",
+    "support": {
+        "source": "https://github.com/codigoweb/drupal-influxdb"
+    },
+    "authors": [
+        {
+            "name": "Javier Gomez",
+            "email": "javier@codigoweb.es"
+        }
+    ],
+    "require": {},
+    "extra": {}
+}

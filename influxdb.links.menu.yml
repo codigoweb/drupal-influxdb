@@ -1,0 +1,25 @@
+# Influxdb Content admin
+influxdb.content_admin:
+  title: 'Influxdb'
+  route_name: influxdb.content_admin
+  description: 'Influxdb content.'
+  parent: system.admin_content
+
+# Influxdb Connection menu items definition
+entity.influxdb_connection.collection:
+  title: 'Influxdb Connections'
+  route_name: entity.influxdb_connection.collection
+  description: 'List Influxdb Connections'
+  parent: influxdb.content_admin
+
+influxdb.admin:
+  title: 'Influxdb'
+  route_name: influxdb.admin
+  description: 'Manage Influxdb settings.'
+  parent: system.admin_structure
+
+influxdb_connection.admin.structure.settings:
+  title: 'Influxdb Connections settings'
+  description: 'Configure Influxdb Connections'
+  route_name: influxdb_connection.settings
+  parent: influxdb.admin

@@ -1,0 +1,23 @@
+influxdb.admin:
+  path: '/admin/structure/influxdb'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Influxdb'
+  requirements:
+    _permission: 'access administration pages'
+
+influxdb.content_admin:
+  path: '/admin/content/influxdb'
+  defaults:
+    _title: 'Influxdb'
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+  requirements:
+    _permission: 'access administration pages'
+
+#entity.influxdb_connection.collection:
+#  path: '/admin/config/influxdb/influxdb_connection'
+#  defaults:
+#    _title: 'Influxdb Connections'
+#    _entity_list: 'influxdb_connection'
+#  requirements:
+#    _permission: 'administer influxdb connections'

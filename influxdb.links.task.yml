@@ -1,0 +1,26 @@
+# Influxdb Connection routing definition
+influxdb_connection.settings_tab:
+  route_name: influxdb_connection.settings
+  title: 'Settings'
+  base_route: influxdb_connection.settings
+
+entity.influxdb_connection.canonical:
+  route_name: entity.influxdb_connection.canonical
+  base_route: entity.influxdb_connection.canonical
+  title: 'View'
+
+entity.influxdb_connection.edit_form:
+  route_name: entity.influxdb_connection.edit_form
+  base_route: entity.influxdb_connection.canonical
+  title: 'Edit'
+
+entity.influxdb_connection.version_history:
+  route_name: entity.influxdb_connection.version_history
+  base_route: entity.influxdb_connection.canonical
+  title: 'Revisions'
+
+entity.influxdb_connection.delete_form:
+  route_name:  entity.influxdb_connection.delete_form
+  base_route:  entity.influxdb_connection.canonical
+  title: Delete
+  weight: 10

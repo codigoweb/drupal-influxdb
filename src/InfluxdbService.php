@@ -4,6 +4,7 @@ namespace Drupal\influxdb;
 
 use DateTime;
 use Drupal;
+use Drupal\Component\Serialization\Json;
 use Drupal\group\Entity\GroupInterface;
 use Drupal\group\Entity\GroupRelationship;
 use Drupal\influxdb\Entity\InfluxdbConnection;
@@ -78,16 +79,22 @@ class InfluxdbService {
   |> filter(fn: (r) => r.channel == ' . $channel . ')
 ';
 
+    $result = [];
     $messages = $this->post($url, $body, $token);
     $lines = explode(PHP_EOL, $messages);
+    $header = reset($lines);
+    $header_array = explode(',', $header);
+    $key = array_search('_time', $header_array);
     array_shift($lines);
 
     foreach ($lines as $line) {
       $msg_array = explode(',', $line);
       $value = preg_replace('/[^A-Za-z0-9-.]/', ' ', end($msg_array));
-      $time = $msg_array[5];
-      if (!empty($time)) {
-        $result[$time] = (float) $value;
+      if (!empty($msg_array[$key])) {
+        $time = $msg_array[$key];
+        if (!empty($time)) {
+          $result[$time] = (float) $value;
+        }
       }
     }
     return $result;
@@ -165,8 +172,7 @@ class InfluxdbService {
     $comsuptions['pvp_kwh'] = $pvp_kwh;
     $comsuptions['importe'] = round($consumption / 1000 * $pvp_kwh, 2);
 
-
-    return $comsuptions;
+    return Json::encode($comsuptions);
 
   }
 

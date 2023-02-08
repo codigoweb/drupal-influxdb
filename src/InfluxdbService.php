@@ -117,6 +117,8 @@ class InfluxdbService {
     $pvp_kwh = (float) $group->get('field_pvp_kwh')->value;
     $influxdb_id = $group->get('field_influxdb_connection')->target_id;
 
+    $start_date->setTimezone(new \DateTimeZone('UTC'));
+    $end_date->setTimezone(new \DateTimeZone('UTC'));
     $start_date_rfc = $start_date->format(DateTime::RFC3339);
     $end_date_rfc = $end_date->format(DateTime::RFC3339);
 

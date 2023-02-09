@@ -155,6 +155,37 @@ class InfluxdbService {
   }
 
   /**
+   * @param $influxdb_id
+   * @param $dbname
+   * @param $measurement
+   * @param $name
+   * @param $channel
+   * @param $start_date
+   * @param $end_date
+   * @return array
+   */
+  public function getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $start_date, $end_date) {
+
+    $body = $this->getCommonBody($dbname, $measurement, $name, $channel, $start_date, $end_date);
+    $values = $this->getResults($influxdb_id, $body);
+    $first_value = 0;
+    $last_value = 0;
+    $consumption = 0;
+    foreach ($values as $key => $value) {
+      if ($first_value === 0) {
+        $first_value = $value;
+      }
+      if ($value < $last_value) {
+        $consumption += $last_value - $first_value;
+        $first_value = $value;
+      }
+      $last_value = $value;
+    }
+    $consumption += $last_value - $first_value;
+    return $consumption;
+  }
+
+  /**
    * Date range
    *
    * @param DateTime $first
@@ -233,7 +264,13 @@ class InfluxdbService {
         $values[$id]['initial_value'] = reset($initial_value);
         if ($id !== 0) {
           $values[$id-1]['end_value'] = $values[$id]['initial_value'];
-          $values[$id-1]['consumption'] = $values[$id-1]['end_value'] - $values[$id-1]['initial_value'];
+          // Si hay un valor menor es que ha habido reseteo del contador
+          // Nos toca calcular por completo el día anterior
+          if ($id > 0 && $values[$id-1]['end_value'] < $values[$id-1]["initial_value"]) {
+            $values[$id-1]['consumption'] = $this->getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $dates[$id-1]["begin"], $date["begin"]);
+          } else {
+            $values[$id-1]['consumption'] = $values[$id-1]['end_value'] - $values[$id-1]['initial_value'];
+          }
         }
       }
       else {

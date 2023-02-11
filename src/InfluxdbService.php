@@ -222,7 +222,8 @@ class InfluxdbService {
    * @param NodeInterface $pitch
    * @param DateTime $start_date
    * @param DateTime $end_date
-   * @return array
+   *
+   * @return false|string
    * @throws \Exception
    */
   public function getConsumption(NodeInterface $pitch, DateTime $start_date, DateTime $end_date) {
@@ -232,7 +233,7 @@ class InfluxdbService {
     $group_relationship = reset($group_relationships);
     $group = $group_relationship->getGroup();
     if (!$group instanceof GroupInterface) {
-      return [];
+      return '';
     }
     $name = $pitch->get('field_mqtt_topic')->value;
     $channel = $pitch->get('field_channel')->value;
@@ -277,9 +278,16 @@ class InfluxdbService {
         $end_value = $this->getLastValue($influxdb_id, $dbname, $measurement, $name, $channel, $date['begin'], $date['end']);
         if (empty($end_value)) {
           $end_value = $this->getLastValue($influxdb_id, $dbname, $measurement, $name, $channel, $dates[$id-1]["end"], $date['end']);
+          $values[$id-1]['end_value'] = reset($end_value);
+          // Si hay un valor menor es que ha habido reseteo del contador
+          // Nos toca calcular por completo el día anterior
+          if ($id > 0 && $values[$id-1]['end_value'] < $values[$id-1]["initial_value"]) {
+            $values[$id-1]['consumption'] = $this->getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $dates[$id-1]["end"], $date["end"]);
+          }
+          else {
+            $values[$id-1]['consumption'] = $values[$id-1]['end_value'] - $values[$id-1]['initial_value'];
+          }
         }
-        $values[$id-1]['end_value'] = reset($end_value);;
-        $values[$id-1]['consumption'] = $values[$id-1]['end_value'] - $values[$id-1]['initial_value'];
       }
     }
     $consumption = 0;

@@ -198,7 +198,6 @@ class InfluxdbService {
     $dates = [];
     $current = $first;
     $interval = new DateInterval('P1D');
-    $interval2 = new DateInterval('PT1H');
 
     $i = 0;
     while( $current < $last ) {
@@ -248,7 +247,6 @@ class InfluxdbService {
     $end_date->setTimezone(new \DateTimeZone('UTC'));
 
     $dates = $this->getDateRange($start_date, $end_date);
-    $end_date_rfc = $end_date->format(DateTime::RFC3339);
     $values = [];
     foreach ($dates as $id => $date) {
       $datepart = substr($date['begin'], 0, 10);
@@ -258,13 +256,14 @@ class InfluxdbService {
 
     $consumption = 0;
     foreach ($values as $value) {
-      $consumption += $value["consumption"];
-      $comsuptions[$value["date"]] = round($value["consumption"], 4);
+      $partial_consumption = round($value["consumption"] / 1000, 3);
+      $consumption += $partial_consumption;
+      $comsuptions[$value["date"]] = $partial_consumption;
 
     }
-    $comsuptions['total'] = round($consumption, 4);
+    $comsuptions['total'] = $consumption;
     $comsuptions['pvp_kwh'] = $pvp_kwh;
-    $comsuptions['importe'] = round($consumption / 1000 * $pvp_kwh, 2);
+    $comsuptions['importe'] = round($consumption * $pvp_kwh, 2);
 
     return Json::encode($comsuptions);
   }

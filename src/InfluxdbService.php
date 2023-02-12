@@ -203,17 +203,15 @@ class InfluxdbService {
     $i = 0;
     while( $current < $last ) {
       $dates[$i]['begin'] = $current->format(DateTime::RFC3339);
-      $current->add($interval2);
-      $dates[$i]['end'] = $current->format(DateTime::RFC3339);
       if ($current === $first) {
         $current->setTime(0,0,0);
       }
       $current->add($interval);
+      $dates[$i]['end'] = $current->format(DateTime::RFC3339);
       $i++;
     }
-    $dates[$i]['end'] = $last->format(DateTime::RFC3339);
-    $last->sub($interval2);
-    $dates[$i]['begin'] = $last->format(DateTime::RFC3339);
+    // actualizamos la ultima hora
+    $dates[$i-1]['end'] = $last->format(DateTime::RFC3339);
 
     return $dates;
   }
@@ -253,43 +251,11 @@ class InfluxdbService {
     $end_date_rfc = $end_date->format(DateTime::RFC3339);
     $values = [];
     foreach ($dates as $id => $date) {
-      if ($date['begin'] !== $end_date_rfc) {
-        $datepart = substr($date['begin'], 0, 10);
-        $values[$id]['date'] = $datepart;
-        $initial_value = $this->getFirstValue($influxdb_id, $dbname, $measurement, $name, $channel, $date['begin'], $date['end']);
-        $n = 1;
-        while( empty($initial_value)) {
-          $initial_value = $this->getFirstValue($influxdb_id, $dbname, $measurement, $name, $channel, $date['begin'], $dates[$id+$n]["begin"]);
-          $n++;
-        }
-        $values[$id]['initial_value'] = reset($initial_value);
-        if ($id !== 0) {
-          $values[$id-1]['end_value'] = $values[$id]['initial_value'];
-          // Si hay un valor menor es que ha habido reseteo del contador
-          // Nos toca calcular por completo el día anterior
-          if ($id > 0 && $values[$id-1]['end_value'] < $values[$id-1]["initial_value"]) {
-            $values[$id-1]['consumption'] = $this->getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $dates[$id-1]["begin"], $date["begin"]);
-          } else {
-            $values[$id-1]['consumption'] = $values[$id-1]['end_value'] - $values[$id-1]['initial_value'];
-          }
-        }
-      }
-      else {
-        $end_value = $this->getLastValue($influxdb_id, $dbname, $measurement, $name, $channel, $date['begin'], $date['end']);
-        if (empty($end_value)) {
-          $end_value = $this->getLastValue($influxdb_id, $dbname, $measurement, $name, $channel, $dates[$id-1]["end"], $date['end']);
-          $values[$id-1]['end_value'] = reset($end_value);
-          // Si hay un valor menor es que ha habido reseteo del contador
-          // Nos toca calcular por completo el día anterior
-          if ($id > 0 && $values[$id-1]['end_value'] < $values[$id-1]["initial_value"]) {
-            $values[$id-1]['consumption'] = $this->getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $dates[$id-1]["end"], $date["end"]);
-          }
-          else {
-            $values[$id-1]['consumption'] = $values[$id-1]['end_value'] - $values[$id-1]['initial_value'];
-          }
-        }
-      }
+      $datepart = substr($date['begin'], 0, 10);
+      $values[$id]['date'] = $datepart;
+      $values[$id]['consumption'] = $this->getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $date["begin"], $date["end"]);
     }
+
     $consumption = 0;
     foreach ($values as $value) {
       $consumption += $value["consumption"];

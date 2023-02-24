@@ -170,18 +170,19 @@ class InfluxdbService {
     $values = $this->getResults($influxdb_id, $body);
     $first_value = 0;
     $last_value = 0;
-    $consumption = 0;
+    $consumption['value'] = 0;
     foreach ($values as $key => $value) {
       if ($first_value === 0) {
         $first_value = $value;
       }
       if ($value < $last_value) {
-        $consumption += $last_value - $first_value;
+        $consumption['value'] += $last_value - $first_value;
         $first_value = $value;
       }
       $last_value = $value;
     }
-    $consumption += $last_value - $first_value;
+    $consumption['date'] = $key;
+    $consumption['value'] += $last_value - $first_value;
     return $consumption;
   }
 
@@ -240,18 +241,23 @@ class InfluxdbService {
     $influxdb_id = $group->get('field_influxdb_connection')->target_id;
 
     // Adjust the dates to UTC time
-    $interval =new DateInterval('PT' . $start_date->getOffset() . 'S');
-    $start_date->add($interval);
-    $end_date->add($interval);
-    $start_date->setTimezone(new \DateTimeZone('UTC'));
-    $end_date->setTimezone(new \DateTimeZone('UTC'));
+    $offset = $start_date->getOffset();
+    if ($offset !== 0) {
+      $interval =new DateInterval('PT' . $start_date->getOffset() . 'S');
+      $start_date->add($interval);
+      $end_date->add($interval);
+      $start_date->setTimezone(new \DateTimeZone('UTC'));
+      $end_date->setTimezone(new \DateTimeZone('UTC'));
+    }
 
     $dates = $this->getDateRange($start_date, $end_date);
     $values = [];
     foreach ($dates as $id => $date) {
       $datepart = substr($date['begin'], 0, 10);
       $values[$id]['date'] = $datepart;
-      $values[$id]['consumption'] = $this->getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $date["begin"], $date["end"]);
+      $first_date = !empty($result['date']) ? $result['date'] : $date["begin"];
+      $result = $this->getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $first_date, $date["end"]);
+      $values[$id]['consumption'] = $result['value'];
     }
 
     $consumption = 0;

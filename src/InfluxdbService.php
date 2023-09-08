@@ -172,6 +172,9 @@ class InfluxdbService {
     $last_value = 0;
     $consumption['value'] = 0;
     foreach ($values as $key => $value) {
+      if ($value == 0) {
+        continue;
+      }
       if ($first_value === 0) {
         $first_value = $value;
       }

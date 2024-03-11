@@ -165,7 +165,7 @@ class InfluxdbService {
    * @return array
    */
   public function getBetweenValue($influxdb_id, $dbname, $measurement, $name, $channel, $start_date, $end_date) {
-
+    $key = '';
     $body = $this->getCommonBody($dbname, $measurement, $name, $channel, $start_date, $end_date);
     $values = $this->getResults($influxdb_id, $body);
     $first_value = 0;

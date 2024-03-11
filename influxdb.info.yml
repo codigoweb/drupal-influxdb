@@ -3,4 +3,4 @@ type: module
 description: InfluxDB servers connections.
 package: Influxdb
 core_version_requirement: ^9 || ^10
-version: '1.0.8'
+version: '1.0.9'

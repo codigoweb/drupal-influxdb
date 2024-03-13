@@ -2,6 +2,7 @@
 
 namespace Drupal\influxdb\Form;
 
+use Drupal;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\influxdb\Entity\InfluxdbConnectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -89,7 +90,8 @@ class InfluxdbConnectionRevisionRevertTranslationForm extends InfluxdbConnection
 
     $latest_revision_translation->setNewRevision();
     $latest_revision_translation->isDefaultRevision(TRUE);
-    $revision->setRevisionCreationTime(REQUEST_TIME);
+    $request_time = Drupal::time()->getRequestTime();
+    $revision->setRevisionCreationTime($request_time);
 
     return $latest_revision_translation;
   }

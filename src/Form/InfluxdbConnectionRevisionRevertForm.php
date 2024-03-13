@@ -2,6 +2,7 @@
 
 namespace Drupal\influxdb\Form;
 
+use Drupal;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -129,7 +130,8 @@ class InfluxdbConnectionRevisionRevertForm extends ConfirmFormBase {
   protected function prepareRevertedRevision(InfluxdbConnectionInterface $revision, FormStateInterface $form_state) {
     $revision->setNewRevision();
     $revision->isDefaultRevision(TRUE);
-    $revision->setRevisionCreationTime(REQUEST_TIME);
+    $request_time = Drupal::time()->getRequestTime();
+    $revision->setRevisionCreationTime($request_time);
 
     return $revision;
   }
